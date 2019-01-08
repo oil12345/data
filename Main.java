@@ -1,38 +1,25 @@
 package org.determine.content;
 
-import java.nio.file.Path;
 import java.util.Optional;
 import com.flowpowered.math.vector.Vector3i;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.world.World;
 import org.determine.content.airship.AirshipModule;
-import org.determine.content.chat.ChatModule;
-import org.determine.content.config.ConfigModule;
 import org.determine.content.data.BoolData;
 import org.determine.content.data.BoolDataImpl;
 import org.determine.content.data.ContentDetermineKeys;
-import org.determine.content.database.DataBaseModule;
-import org.determine.content.fuel.FuelModule;
-import org.determine.content.gui.InterfaceModule;
-import org.determine.content.item.ItemModule;
-import org.determine.content.permission.PermissionModule;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import com.google.inject.Inject;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 
@@ -42,23 +29,6 @@ public class Main {
 
 	@Inject
 	PluginContainer container;
-	
-	@Inject
-	@DefaultConfig(sharedRoot = true)
-	private Path ConfigDir;
-	
-	@Inject
-	@DefaultConfig(sharedRoot = true)
-    private ConfigurationLoader<CommentedConfigurationNode> configLoader;
-
-	@Inject
-    private Game gmae;
-	
-	private static PluginContainer plugin;
-	
-	public static PluginContainer getPlugin() {
-		return plugin;
-	}
 
 	public void preInit(GamePreInitializationEvent e) {
 		DataRegistration.builder()
@@ -71,21 +41,6 @@ public class Main {
 				.builder(new BoolDataImpl.Builder())
 				.buildAndRegister(container);
 		Sponge.getDataManager().registerContentUpdater(BoolDataImpl.class, new BoolDataImpl.BoolEnabled1To2Updater());
-	}
-	
-	@Listener
-	public void onStart(GameStartedServerEvent e) {
-		plugin=Sponge.getPluginManager().getPlugin("content_determine").get();
-		ConfigModule.getInstance().init(configLoader, ConfigDir);
-		DataBaseModule.getInstance().init();
-		ChatModule.getInstance().init();
-		PermissionModule.getInstance().init();
-		FuelModule.getInstance().init();
-		ItemModule.getInstance().init();
-		InterfaceModule.getInstance().init();
-
-		AirshipModule.getInstance().init();
-
 	}
 
 	@Listener
