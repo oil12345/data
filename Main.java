@@ -1,27 +1,3 @@
-package org.determine.content;
-
-import java.util.Optional;
-import com.flowpowered.math.vector.Vector3i;
-import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.world.World;
-import org.determine.content.airship.AirshipModule;
-import org.determine.content.data.BoolData;
-import org.determine.content.data.BoolDataImpl;
-import org.determine.content.data.ContentDetermineKeys;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.data.DataRegistration;
-import org.spongepowered.api.data.type.HandTypes;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
-import com.google.inject.Inject;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.Location;
 
 
 @Plugin(id = "content_determine",name = "ContentDetermine plugin", version = "0.1", description = "Plugin for our server")
@@ -31,16 +7,16 @@ public class Main {
 	PluginContainer container;
 
 	public void preInit(GamePreInitializationEvent e) {
+		ContentDetermineKeys.dummy();
+
 		DataRegistration.builder()
 				.dataName("My Bool Data")
 				.manipulatorId("bool_data")
-				.dataClass(BoolData.class)
-				.dataImplementation(BoolDataImpl.class)
-				.immutableClass(BoolData.Immutable.class)
-				.immutableImplementation(BoolDataImpl.Immutable.class)
-				.builder(new BoolDataImpl.Builder())
+				.dataClass(MyData.class)
+				.immutableClass(MyImmutableData.class)
+				.builder(new MyDataBuilder())
 				.buildAndRegister(container);
-		Sponge.getDataManager().registerContentUpdater(BoolDataImpl.class, new BoolDataImpl.BoolEnabled1To2Updater());
+
 	}
 
 	@Listener
@@ -53,8 +29,8 @@ public class Main {
 		if(player.getItemInHand(HandTypes.MAIN_HAND).get().getType().equals(ItemTypes.APPLE)) {
 
 			BlockState bs = BlockState.builder()
-					.blockType(BlockTypes.BONE_BLOCK).add(new BoolDataImpl(true))
-					//.add(ContentDetermineKeys.BOOL_ENABLED, true)
+					.blockType(BlockTypes.BONE_BLOCK)//add(new BoolDataImpl(true))
+					.add(ContentDetermineKeys.BOOL_ENABLED, true)
 					.build();
 
 			loc.setBlock(bs);
@@ -65,5 +41,6 @@ public class Main {
 			player.sendMessage(Text.of(bs.get()));
 		}
 	}
-	
+
+
 }
